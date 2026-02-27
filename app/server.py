@@ -3,10 +3,8 @@ from __future__ import annotations
 
 import json
 import os
-import smtplib
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from email.message import EmailMessage
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -40,22 +38,22 @@ class EmailStore:
             self._save([])
 
     def _load(self) -> list[dict]:
-        with self.path.open("r", encoding="utf-8") as file:
-            return json.load(file)
+        with self.path.open("r", encoding="utf-8") as f:
+            return json.load(f)
 
     def _save(self, rows: list[dict]) -> None:
-        with self.path.open("w", encoding="utf-8") as file:
-            json.dump(rows, file, indent=2)
+        with self.path.open("w", encoding="utf-8") as f:
+            json.dump(rows, f, indent=2)
 
     def list(self, recipient: str | None = None) -> list[dict]:
         rows = self._load()
         if recipient:
-            rows = [row for row in rows if row["recipient"].lower() == recipient.lower()]
-        return sorted(rows, key=lambda row: row["id"], reverse=True)
+            rows = [r for r in rows if r["recipient"].lower() == recipient.lower()]
+        return sorted(rows, key=lambda x: x["id"], reverse=True)
 
     def create(self, sender: str, recipient: str, subject: str, body: str) -> dict:
         rows = self._load()
-        next_id = max([row["id"] for row in rows], default=0) + 1
+        next_id = max([r["id"] for r in rows], default=0) + 1
         email = Email(
             id=next_id,
             sender=sender,
@@ -72,57 +70,8 @@ class EmailStore:
 STORE = EmailStore(DATA_FILE)
 
 
-class SMTPConfigError(RuntimeError):
-    pass
-
-
-class EmailDelivery:
-    @staticmethod
-    def _read_config() -> dict:
-        cfg = {
-            "host": os.environ.get("SMTP_HOST", "").strip(),
-            "port": int(os.environ.get("SMTP_PORT", "587")),
-            "user": os.environ.get("SMTP_USER", "").strip(),
-            "password": os.environ.get("SMTP_PASS", "").strip(),
-            "from_addr": os.environ.get("SMTP_FROM", os.environ.get("SMTP_USER", "")).strip(),
-            "use_tls": os.environ.get("SMTP_USE_TLS", "true").lower() == "true",
-            "use_ssl": os.environ.get("SMTP_USE_SSL", "false").lower() == "true",
-        }
-        required = ["host", "port", "user", "password", "from_addr"]
-        missing = [key for key in required if not cfg.get(key)]
-        if missing:
-            raise SMTPConfigError(
-                "SMTP is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM."
-            )
-        return cfg
-
-    @staticmethod
-    def send_email(recipient: str, subject: str, body: str) -> None:
-        cfg = EmailDelivery._read_config()
-
-        message = EmailMessage()
-        message["From"] = cfg["from_addr"]
-        message["To"] = recipient
-        message["Subject"] = subject
-        message.set_content(body)
-
-        if cfg["use_ssl"]:
-            with smtplib.SMTP_SSL(cfg["host"], cfg["port"], timeout=15) as server:
-                server.login(cfg["user"], cfg["password"])
-                server.send_message(message)
-            return
-
-        with smtplib.SMTP(cfg["host"], cfg["port"], timeout=15) as server:
-            server.ehlo()
-            if cfg["use_tls"]:
-                server.starttls()
-                server.ehlo()
-            server.login(cfg["user"], cfg["password"])
-            server.send_message(message)
-
-
 class Handler(BaseHTTPRequestHandler):
-    server_version = "POCEmailServer/1.0"
+    server_version = "POCEmailServer/0.2"
 
     def _send_json(self, payload: dict | list, status: HTTPStatus = HTTPStatus.OK) -> None:
         body = json.dumps(payload).encode("utf-8")
@@ -205,7 +154,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if parsed.path == "/api/emails":
             required = ["sender", "recipient", "subject", "body"]
-            missing = [key for key in required if not payload.get(key)]
+            missing = [k for k in required if not payload.get(k)]
             if missing:
                 self._send_json(
                     {"error": f"Missing required fields: {', '.join(missing)}"},
@@ -224,36 +173,19 @@ class Handler(BaseHTTPRequestHandler):
 
         if parsed.path == "/api/send-architecture-email":
             recipient = str(payload.get("recipient", "")).strip() or "Swastik.Singh@gmail.com"
-            subject = "NovaMail POC Vision + Architecture for Manager Review"
-            email_body = (
-                "Hi Swastik,\n\n"
-                "Sharing the latest NovaMail POC package.\n"
-                "- PM vision emphasizes AI-first triage and speed\n"
-                "- Team lead architecture introduces SMTP delivery + intelligent inbox lanes\n"
-                "- UX redesign introduces Focus Now / Quick Wins / FYI streams\n"
-                "- Backend now supports real SMTP delivery when configured\n\n"
-                "Regards,\nPM — NovaMail"
-            )
-
-            try:
-                EmailDelivery.send_email(recipient=recipient, subject=subject, body=email_body)
-            except SMTPConfigError as exc:
-                self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
-                return
-            except Exception as exc:  # smtp/network runtime failures
-                self._send_json({"error": f"SMTP delivery failed: {exc}"}, HTTPStatus.BAD_GATEWAY)
-                return
-
             email = STORE.create(
-                sender=os.environ.get("SMTP_FROM", "pm@novamail.dev"),
+                sender="pm@novamail.dev",
                 recipient=recipient,
-                subject=subject,
-                body=email_body,
+                subject="NovaMail POC Vision + Architecture for Manager Review",
+                body=(
+                    "Hi Swastik, sharing the NovaMail POC architecture: frontend static UI, "
+                    "Python API service, JSON persistence, with a scale plan to PostgreSQL + auth + AI jobs."
+                ),
             )
             self._send_json(
                 {
-                    "status": "sent",
-                    "message": f"Architecture email sent to {recipient}.",
+                    "status": "sent-simulated",
+                    "message": "Architecture email recorded in outbox/inbox for demo purposes.",
                     "email": email,
                 },
                 HTTPStatus.CREATED,

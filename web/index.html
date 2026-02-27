@@ -3,60 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NovaMail — Future Inbox</title>
+    <title>NovaMail POC</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <div class="app-bg"></div>
-    <header class="hero glass">
-      <div>
-        <h1>NovaMail</h1>
-        <p>Revolutionary inbox orchestration for high-performance teams.</p>
-      </div>
-      <div class="hero-actions">
-        <button id="send-arch-email-btn" class="accent">Send PM Architecture Email</button>
-        <p id="send-status" class="meta"></p>
-      </div>
+    <header>
+      <h1>NovaMail POC</h1>
+      <p>AI-assisted inbox experience (proof of concept)</p>
     </header>
 
-    <main class="layout">
-      <section class="panel glass compose-panel">
+    <main>
+      <section class="panel">
+        <h2>PM Actions</h2>
+        <p>Send architecture note to: <strong>Swastik.Singh@gmail.com</strong></p>
+        <button id="send-arch-email-btn">Send Architecture Email</button>
+        <p id="send-status" class="meta"></p>
+      </section>
+
+      <section class="panel">
         <h2>Compose</h2>
         <form id="compose-form">
           <input name="sender" placeholder="From" value="pm@novamail.dev" required />
           <input name="recipient" placeholder="To" value="Swastik.Singh@gmail.com" required />
           <input name="subject" placeholder="Subject" required />
-          <textarea name="body" placeholder="Write your message..." rows="7" required></textarea>
-          <button type="submit" class="accent">Send</button>
+          <textarea name="body" placeholder="Write your message..." rows="6" required></textarea>
+          <button type="submit">Send</button>
         </form>
       </section>
 
-      <section class="panel glass inbox-panel">
-        <div class="inbox-header">
-          <h2>Future Inbox</h2>
-          <div class="filters">
-            <input id="recipient-filter" placeholder="Recipient" value="Swastik.Singh@gmail.com" />
-            <button id="refresh-btn">Refresh</button>
-          </div>
+      <section class="panel">
+        <h2>Inbox</h2>
+        <div class="inbox-controls">
+          <input id="recipient-filter" placeholder="Filter by recipient" value="Swastik.Singh@gmail.com" />
+          <button id="refresh-btn">Refresh</button>
         </div>
+        <ul id="inbox"></ul>
+      </section>
 
-        <div class="lane-grid">
-          <article class="lane">
-            <h3>Focus Now</h3>
-            <p>High-impact messages needing immediate action.</p>
-            <ul id="lane-focus"></ul>
-          </article>
-          <article class="lane">
-            <h3>Quick Wins</h3>
-            <p>2-minute responses to clear fast.</p>
-            <ul id="lane-quick"></ul>
-          </article>
-          <article class="lane">
-            <h3>FYI Stream</h3>
-            <p>Context and updates without urgent action.</p>
-            <ul id="lane-fyi"></ul>
-          </article>
-        </div>
+      <section class="panel">
+        <h2>Developer Investigation</h2>
+        <p><strong>Root cause:</strong> the server previously only routed the root path (<code>/</code>) and rejected common paths like <code>/index.html</code> and <code>/web/index.html</code>, which can surface a plain “Not Found” page in some environments.</p>
+        <p><strong>Fix:</strong> added route aliases plus safer static file handling and image MIME support.</p>
       </section>
     </main>
 

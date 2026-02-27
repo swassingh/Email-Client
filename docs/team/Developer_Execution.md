@@ -1,15 +1,15 @@
-# Developer Execution Plan — Final POC
+# Developer Execution Plan
 
-## UX Designer (Final)
-- Rebuilt UI into a premium dark glassmorphism interface.
-- Replaced traditional list inbox with a triaged “Future Inbox” (Focus Now, Quick Wins, FYI Stream).
-- Streamlined PM CTA for architecture-email dispatch and status visibility.
+## UX Developer Deliverables
+- Build clean two-panel UI for compose + inbox.
+- Implement optimistic interactions (send and refresh).
+- Ensure filtering by recipient for demo narrative.
 
-## Backend Developer (Final)
-- Upgraded architecture-email endpoint to perform real SMTP email sends.
-- Added robust SMTP configuration validation and explicit error handling.
-- Preserved persisted local inbox history while supporting external delivery.
+## Backend Designer Deliverables
+- Implement robust HTTP routing and validation.
+- Persist data to local file-based store.
+- Keep interfaces stable for future DB swap.
 
-## Delivery Outcome
-- PM can trigger architecture email to Gmail via SMTP-backed endpoint.
-- UX now presents a modern, high-signal, decision-first inbox experience.
+## Joint Definition of Done
+- End-to-end email send + inbox display works locally.
+- Basic automated API checks pass.

@@ -1,39 +1,57 @@
 # NovaMail POC (Email-Client)
 
-NovaMail is a redesigned email-client POC with a modern UX and an outcome-first inbox.
+Proof-of-concept email client prepared for a manager demo.
 
-## Team of 4 Deliverables
-- PM Vision: `docs/team/PM_Vision.md`
-- Team Lead Architecture: `docs/team/Team_Architecture.md`
-- UX + Backend Execution: `docs/team/Developer_Execution.md`
-- PM Draft Email: `docs/communications/PM_email_to_Swastik_Singh.md`
+## Team of 4
+- PM: Vision and stakeholder communication.
+- Team Lead: Architecture.
+- UX Developer: Web client experience.
+- Backend Designer: API and persistence.
 
-## Run locally
+Artifacts:
+- PM vision: `docs/team/PM_Vision.md`
+- Architecture: `docs/team/Team_Architecture.md`
+- Developer split: `docs/team/Developer_Execution.md`
+- PM email draft to stakeholder: `docs/communications/PM_email_to_Swastik_Singh.md`
+- Developer RCA for Not Found issue: `docs/team/Developer_Image_Issue_RCA.md`
+
+## Run on your local machine
+### 1) Requirements
+- Python 3.10+ installed
+
+### 2) Start the app
 ```bash
+cd Email-Client
 python3 app/server.py
 ```
-Open:
+
+You should see:
+```text
+POC Email Client server listening on http://0.0.0.0:8000
+```
+
+### 3) Open in browser
+Use either:
 - `http://localhost:8000/`
 - `http://localhost:8000/index.html`
 
-## Real SMTP email delivery (to Gmail inbox)
-`POST /api/send-architecture-email` now performs real SMTP send.
-Set these variables before starting server:
-
-```bash
-export SMTP_HOST="smtp.gmail.com"
-export SMTP_PORT="587"
-export SMTP_USER="your.account@gmail.com"
-export SMTP_PASS="your_app_password"
-export SMTP_FROM="your.account@gmail.com"
-export SMTP_USE_TLS="true"
-export SMTP_USE_SSL="false"
-python3 app/server.py
-```
-
-Then click **Send PM Architecture Email** in the UI.
-
-> Gmail note: use an App Password (not your main password).
+## Troubleshooting: preview says "Not Found"
+If you still see a blank `Not Found` page/image in a preview tool:
+1. Confirm you are opening the app URL (not a stale preview URL):
+   - `http://localhost:8000/index.html`
+2. Confirm server is running in your terminal.
+3. Verify routes manually:
+   ```bash
+   curl -i http://localhost:8000/
+   curl -i http://localhost:8000/index.html
+   curl -i http://localhost:8000/web/index.html
+   ```
+   All should return `HTTP/1.0 200 OK`.
+4. If port 8000 is busy, run:
+   ```bash
+   PORT=8123 python3 app/server.py
+   ```
+   then open `http://localhost:8123/index.html`.
 
 ## API
 - `GET /api/health`

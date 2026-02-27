@@ -1,26 +1,25 @@
 To: Swastik.Singh@gmail.com
 From: pm@novamail.dev
-Subject: NovaMail Week-1 POC — Vision, Architecture, and Demo Readiness
+Subject: NovaMail POC Vision + Architecture for Manager Review
 
 Hi Swastik,
 
-Sharing the refreshed NovaMail package for next week’s manager demo.
+As requested, here is the PM summary and architecture for the NovaMail proof of concept.
 
-**Product Vision (PM):**
-NovaMail is designed to replace legacy inbox browsing with outcome-first workflow orchestration. Instead of scrolling endless chronological threads, users enter three decision lanes: Focus Now, Quick Wins, and FYI Stream.
+Vision:
+NovaMail will become a modern email client focused on helping users process high-volume inboxes quickly with AI-assisted prioritization and summarization.
 
-**Architecture (Team Lead):**
-- Modern web client with triage lanes and priority rendering.
-- Python API service for compose, list, and architecture-delivery actions.
-- Persistent message store for demo continuity.
-- Real SMTP delivery path for external email delivery to Gmail when SMTP credentials are configured.
+Architecture (POC):
+1. Frontend: static HTML/CSS/JS UI with Compose and Inbox panels.
+2. Backend: Python HTTP service with REST endpoints for health checks and email operations.
+3. Storage: local JSON persistence for quick demo iteration.
 
-**Execution Status:**
-- UX redesign completed with modern glassmorphism interface.
-- Backend upgraded to support actual SMTP email dispatch.
-- Inbox model upgraded to a triaged, “future inbox” outlook.
+Planned evolution after POC:
+- Move persistence to PostgreSQL.
+- Add authentication and mailbox access controls.
+- Add async AI processing pipeline for summaries and action suggestions.
 
-If approved, we’ll execute Week-2 with auth, threaded conversations, and AI summarization.
+This is implementation-ready for the team to demo next week.
 
 Best,
 PM — NovaMail

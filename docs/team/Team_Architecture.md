@@ -1,36 +1,23 @@
-# Team Lead Architecture — NovaMail POC v2
+# Team Lead Architecture — NovaMail POC
 
-## North-Star Architecture
-NovaMail is rebuilt around an **Outcome Inbox Architecture**:
-1. **Capture Layer**: compose + ingestion APIs accept incoming/outgoing messages.
-2. **Intelligence Layer (POC rules, future AI)**: classifies each message into Focus Now, Quick Wins, or FYI Stream.
-3. **Experience Layer**: triage lanes drive decisions instead of linear message lists.
-4. **Delivery Layer**: SMTP service sends external messages (including Gmail) using provider credentials.
+## System Overview
+A lightweight single-service architecture to accelerate prototyping:
+- **Presentation layer**: static HTML/CSS/JS frontend.
+- **API layer**: Python HTTP server exposing `/api/health` and `/api/emails`.
+- **Persistence layer**: JSON file (`app/data/emails.json`) for simple local durability.
 
-## POC Components
-- Frontend: static web app (`web/`) with modern lane-based inbox rendering.
-- Backend: Python HTTP API (`app/server.py`) exposing:
-  - `GET /api/health`
-  - `GET /api/emails?recipient=`
-  - `POST /api/emails`
-  - `POST /api/send-architecture-email` (SMTP send)
-- Persistence: local JSON data store for deterministic demos.
+## Why this architecture
+- Minimal dependencies for rapid setup.
+- Easy to evolve into service-oriented design (auth, notifications, AI inference) after POC.
+- Clear ownership boundaries for UX and backend roles.
 
-## External Email Delivery
-SMTP integration requires:
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
-Optional:
-- `SMTP_USE_TLS=true|false`
-- `SMTP_USE_SSL=true|false`
+## API Contracts
+- `GET /api/health` → service status.
+- `GET /api/emails?recipient=` → list messages filtered by recipient.
+- `POST /api/emails` → validate and create email payload.
 
-For Gmail, use an App Password and provider SMTP settings.
-
-## Scale Path
-- Replace JSON with PostgreSQL + migration pipeline.
-- Add identity + tenant-safe mailbox boundaries.
-- Introduce event bus and async AI scoring/summarization workers.
-- Add conversation threading + action suggestions.
+## Future scale path
+1. Replace JSON file store with PostgreSQL.
+2. Add authentication and mailbox ownership checks.
+3. Add async job queue for AI summarization.
+4. Split into frontend SPA + backend API gateway.

@@ -1,66 +1,40 @@
 const form = document.getElementById('compose-form');
+const inbox = document.getElementById('inbox');
 const recipientFilter = document.getElementById('recipient-filter');
 const refreshBtn = document.getElementById('refresh-btn');
 const sendArchEmailBtn = document.getElementById('send-arch-email-btn');
 const sendStatus = document.getElementById('send-status');
-const laneFocus = document.getElementById('lane-focus');
-const laneQuick = document.getElementById('lane-quick');
-const laneFYI = document.getElementById('lane-fyi');
-
-function laneForEmail(email) {
-  const text = `${email.subject} ${email.body}`.toLowerCase();
-  if (text.includes('urgent') || text.includes('asap') || text.includes('review') || text.includes('manager')) return 'focus';
-  if ((email.body || '').length < 120 || text.includes('quick') || text.includes('confirm')) return 'quick';
-  return 'fyi';
-}
-
-function renderEmail(email) {
-  const li = document.createElement('li');
-  li.className = 'mail-card';
-  li.innerHTML = `
-    <div class="mail-top">
-      <span class="subject">${email.subject}</span>
-      <span class="timestamp">${new Date(email.created_at).toLocaleString()}</span>
-    </div>
-    <div class="meta">${email.sender} → ${email.recipient}</div>
-    <p>${email.body}</p>
-  `;
-  return li;
-}
-
-function clearLanes() {
-  laneFocus.innerHTML = '';
-  laneQuick.innerHTML = '';
-  laneFYI.innerHTML = '';
-}
 
 async function fetchInbox() {
   const recipient = encodeURIComponent(recipientFilter.value.trim());
-  const response = await fetch(`/api/emails?recipient=${recipient}`);
-  const emails = await response.json();
+  const res = await fetch(`/api/emails?recipient=${recipient}`);
+  const data = await res.json();
 
-  clearLanes();
-  for (const email of emails) {
-    const lane = laneForEmail(email);
-    const card = renderEmail(email);
-    if (lane === 'focus') laneFocus.appendChild(card);
-    else if (lane === 'quick') laneQuick.appendChild(card);
-    else laneFYI.appendChild(card);
+  inbox.innerHTML = '';
+  for (const email of data) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="subject">${email.subject}</div>
+      <div class="meta">From: ${email.sender} • To: ${email.recipient}</div>
+      <p>${email.body}</p>
+      <div class="meta">${new Date(email.created_at).toLocaleString()}</div>
+    `;
+    inbox.appendChild(li);
   }
 }
 
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
   const payload = Object.fromEntries(new FormData(form).entries());
-  const response = await fetch('/api/emails', {
+  const res = await fetch('/api/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    alert(error.error || 'Failed to send email');
+  if (!res.ok) {
+    const err = await res.json();
+    alert(err.error || 'Failed to send email');
     return;
   }
 
@@ -69,20 +43,20 @@ form.addEventListener('submit', async (event) => {
 });
 
 sendArchEmailBtn.addEventListener('click', async () => {
-  sendStatus.textContent = 'Sending via SMTP...';
-  const response = await fetch('/api/send-architecture-email', {
+  sendStatus.textContent = 'Sending...';
+  const res = await fetch('/api/send-architecture-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ recipient: 'Swastik.Singh@gmail.com' }),
   });
 
-  const result = await response.json();
-  if (!response.ok) {
-    sendStatus.textContent = result.error || 'Failed to send architecture email';
+  if (!res.ok) {
+    sendStatus.textContent = 'Failed to send architecture email.';
     return;
   }
 
-  sendStatus.textContent = result.message;
+  const data = await res.json();
+  sendStatus.textContent = `Status: ${data.status} to ${data.email.recipient}`;
   recipientFilter.value = 'Swastik.Singh@gmail.com';
   await fetchInbox();
 });
