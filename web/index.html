@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaMail POC</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>NovaMail POC</h1>
+      <p>AI-assisted inbox experience (proof of concept)</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>PM Actions</h2>
+        <p>Send architecture note to: <strong>Swastik.Singh@gmail.com</strong></p>
+        <button id="send-arch-email-btn">Send Architecture Email</button>
+        <p id="send-status" class="meta"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Compose</h2>
+        <form id="compose-form">
+          <input name="sender" placeholder="From" value="pm@novamail.dev" required />
+          <input name="recipient" placeholder="To" value="Swastik.Singh@gmail.com" required />
+          <input name="subject" placeholder="Subject" required />
+          <textarea name="body" placeholder="Write your message..." rows="6" required></textarea>
+          <button type="submit">Send</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Inbox</h2>
+        <div class="inbox-controls">
+          <input id="recipient-filter" placeholder="Filter by recipient" value="Swastik.Singh@gmail.com" />
+          <button id="refresh-btn">Refresh</button>
+        </div>
+        <ul id="inbox"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Developer Investigation</h2>
+        <p><strong>Root cause:</strong> the server previously only routed the root path (<code>/</code>) and rejected common paths like <code>/index.html</code> and <code>/web/index.html</code>, which can surface a plain “Not Found” page in some environments.</p>
+        <p><strong>Fix:</strong> added route aliases plus safer static file handling and image MIME support.</p>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
