@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaMail — Future Inbox</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-bg"></div>
+    <header class="hero glass">
+      <div>
+        <h1>NovaMail</h1>
+        <p>Revolutionary inbox orchestration for high-performance teams.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="send-arch-email-btn" class="accent">Send PM Architecture Email</button>
+        <p id="send-status" class="meta"></p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel glass compose-panel">
+        <h2>Compose</h2>
+        <form id="compose-form">
+          <input name="sender" placeholder="From" value="pm@novamail.dev" required />
+          <input name="recipient" placeholder="To" value="Swastik.Singh@gmail.com" required />
+          <input name="subject" placeholder="Subject" required />
+          <textarea name="body" placeholder="Write your message..." rows="7" required></textarea>
+          <button type="submit" class="accent">Send</button>
+        </form>
+      </section>
+
+      <section class="panel glass inbox-panel">
+        <div class="inbox-header">
+          <h2>Future Inbox</h2>
+          <div class="filters">
+            <input id="recipient-filter" placeholder="Recipient" value="Swastik.Singh@gmail.com" />
+            <button id="refresh-btn">Refresh</button>
+          </div>
+        </div>
+
+        <div class="lane-grid">
+          <article class="lane">
+            <h3>Focus Now</h3>
+            <p>High-impact messages needing immediate action.</p>
+            <ul id="lane-focus"></ul>
+          </article>
+          <article class="lane">
+            <h3>Quick Wins</h3>
+            <p>2-minute responses to clear fast.</p>
+            <ul id="lane-quick"></ul>
+          </article>
+          <article class="lane">
+            <h3>FYI Stream</h3>
+            <p>Context and updates without urgent action.</p>
+            <ul id="lane-fyi"></ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
