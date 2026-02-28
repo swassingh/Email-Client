@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": 1,
+    "sender": "pm@novamail.dev",
+    "recipient": "Swastik.Singh@gmail.com",
+    "subject": "NovaMail POC Architecture Document \u2014 Complete",
+    "body": "# Team Lead Architecture \u2014 NovaMail POC\n\n## System Overview\nA lightweight single-service architecture to accelerate prototyping:\n- **Presentation layer**: static HTML/CSS/JS frontend.\n- **API layer**: Python HTTP server exposing `/api/health` and `/api/emails`.\n- **Persistence layer**: JSON file (`app/data/emails.json`) for simple local durability.\n\n## Why this architecture\n- Minimal dependencies for rapid setup.\n- Easy to evolve into service-oriented design (auth, notifications, AI inference) after POC.\n- Clear ownership boundaries for UX and backend roles.\n\n## API Contracts\n- `GET /api/health` \u2192 service status.\n- `GET /api/emails?recipient=` \u2192 list messages filtered by recipient.\n- `POST /api/emails` \u2192 validate and create email payload.\n\n## Future scale path\n1. Replace JSON file store with PostgreSQL.\n2. Add authentication and mailbox ownership checks.\n3. Add async job queue for AI summarization.\n4. Split into frontend SPA + backend API gateway.\n",
+    "created_at": "2026-02-27T23:39:25.021864+00:00",
+    "email_type": "sent"
+  },
+  {
+    "id": 2,
+    "sender": "Swastik.Singh@gmail.com",
+    "recipient": "pm@novamail.dev",
+    "subject": "Plans",
+    "body": "Plan Approved. Good Work.",
+    "created_at": "2026-02-27T23:40:16.969248+00:00",
+    "email_type": "inbox"
+  },
+  {
+    "id": 3,
+    "sender": "pm@novamail.dev",
+    "recipient": "James.Bond@Hollywood.com",
+    "subject": "Hi",
+    "body": "Hi Mr. Bond,\n\nI'm a big fan of your works....",
+    "created_at": "2026-02-27T23:48:52.918562+00:00",
+    "email_type": "draft"
+  },
+  {
+    "id": 4,
+    "sender": "pm@novamail.dev",
+    "recipient": "Swastik.Singh@gmail.com",
+    "subject": "Day Off",
+    "body": "Hi Boss,\n\nCan I have the day off today? I am feeling very sick",
+    "created_at": "2026-02-27T23:53:28.872863+00:00",
+    "email_type": "scheduled"
+  }
+]

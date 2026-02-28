@@ -8,44 +8,123 @@
   </head>
   <body>
     <header>
-      <h1>NovaMail POC</h1>
-      <p>AI-assisted inbox experience (proof of concept)</p>
+      <div class="header-content">
+        <h1>NovaMail</h1>
+        <div class="header-actions">
+          <input id="recipient-filter" placeholder="Filter by email" style="display: none;" />
+          <button id="refresh-btn" class="icon-btn" title="Refresh">↻</button>
+        </div>
+      </div>
     </header>
 
-    <main>
-      <section class="panel">
-        <h2>PM Actions</h2>
-        <p>Send architecture note to: <strong>Swastik.Singh@gmail.com</strong></p>
-        <button id="send-arch-email-btn">Send Architecture Email</button>
-        <p id="send-status" class="meta"></p>
-      </section>
+    <div class="app-layout">
+      <nav class="sidebar">
+        <button class="tab-btn active" data-tab="inbox">Inbox</button>
+        <button class="tab-btn" data-tab="sent">Sent</button>
+        <button class="tab-btn" data-tab="draft">Draft</button>
+        <button class="tab-btn" data-tab="scheduled">Scheduled</button>
+        <button class="tab-btn" data-tab="spam">Spam</button>
+        <button class="tab-btn" data-tab="junk">Junk</button>
+        <button class="tab-btn" data-tab="trash">Trash</button>
+        <button class="tab-btn" data-tab="all">All</button>
+      </nav>
 
-      <section class="panel">
-        <h2>Compose</h2>
-        <form id="compose-form">
-          <input name="sender" placeholder="From" value="pm@novamail.dev" required />
-          <input name="recipient" placeholder="To" value="Swastik.Singh@gmail.com" required />
-          <input name="subject" placeholder="Subject" required />
-          <textarea name="body" placeholder="Write your message..." rows="6" required></textarea>
-          <button type="submit">Send</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>Inbox</h2>
-        <div class="inbox-controls">
-          <input id="recipient-filter" placeholder="Filter by recipient" value="Swastik.Singh@gmail.com" />
-          <button id="refresh-btn">Refresh</button>
+      <main>
+        <div class="inbox-container">
+          <ul id="inbox"></ul>
+          <div id="empty-state" class="empty-state">
+            <p>No emails found</p>
+          </div>
         </div>
-        <ul id="inbox"></ul>
-      </section>
+      </main>
+    </div>
 
-      <section class="panel">
-        <h2>Developer Investigation</h2>
-        <p><strong>Root cause:</strong> the server previously only routed the root path (<code>/</code>) and rejected common paths like <code>/index.html</code> and <code>/web/index.html</code>, which can surface a plain “Not Found” page in some environments.</p>
-        <p><strong>Fix:</strong> added route aliases plus safer static file handling and image MIME support.</p>
-      </section>
-    </main>
+    <!-- Compose Button -->
+    <button id="compose-btn" class="compose-btn" title="Compose Email">
+      <span>+</span>
+    </button>
+
+    <!-- Email Detail Modal -->
+    <div id="email-detail-modal" class="modal">
+      <div class="modal-content email-detail-content">
+        <div class="modal-header">
+          <h2 id="detail-subject"></h2>
+          <button id="close-detail-modal" class="close-btn">&times;</button>
+        </div>
+        <div class="email-detail-body">
+          <div class="email-detail-meta">
+            <div class="detail-row">
+              <span class="detail-label">From:</span>
+              <span id="detail-sender" class="detail-value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">To:</span>
+              <span id="detail-recipient" class="detail-value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date:</span>
+              <span id="detail-date" class="detail-value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Type:</span>
+              <span id="detail-type" class="detail-value"></span>
+            </div>
+            <div class="detail-row" id="detail-scheduled-row" style="display: none;">
+              <span class="detail-label">Scheduled For:</span>
+              <span id="detail-scheduled" class="detail-value"></span>
+            </div>
+          </div>
+          <div id="detail-body" class="email-detail-text"></div>
+          <div class="email-actions">
+            <button id="mark-inbox-btn" class="action-btn" data-type="inbox">Move to Inbox</button>
+            <button id="mark-spam-btn" class="action-btn action-spam" data-type="spam">Mark as Spam</button>
+            <button id="mark-junk-btn" class="action-btn action-junk" data-type="junk">Mark as Junk</button>
+            <button id="mark-trash-btn" class="action-btn action-trash" data-type="trash">Move to Trash</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compose Modal -->
+    <div id="compose-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Compose Email</h2>
+          <button id="close-modal" class="close-btn">&times;</button>
+        </div>
+        <form id="compose-form">
+          <div class="form-field">
+            <label>From</label>
+            <input name="sender" value="pm@novamail.dev" required />
+          </div>
+          <div class="form-field">
+            <label>To</label>
+            <input name="recipient" placeholder="Enter recipient email" required />
+          </div>
+          <div class="form-field">
+            <label>Subject</label>
+            <input name="subject" placeholder="Enter subject" required />
+          </div>
+          <div class="form-field">
+            <label>Message</label>
+            <textarea name="body" placeholder="Write your message..." rows="10" required></textarea>
+          </div>
+          <div class="form-field">
+            <label>
+              <input type="checkbox" id="schedule-checkbox" />
+              Schedule Send
+            </label>
+            <input type="datetime-local" id="schedule-datetime" name="scheduled_at" style="display: none;" />
+          </div>
+          <div class="form-actions">
+            <button type="button" id="save-draft-btn" class="draft-btn">Save Draft</button>
+            <button type="button" id="schedule-send-btn" class="schedule-btn" style="display: none;">Schedule Send</button>
+            <button type="button" id="cancel-btn" class="cancel-btn">Cancel</button>
+            <button type="submit" class="send-btn">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="/static/app.js"></script>
   </body>
