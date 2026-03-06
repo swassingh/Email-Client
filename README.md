@@ -35,6 +35,24 @@ Use either:
 - `http://localhost:8000/`
 - `http://localhost:8000/index.html`
 
+## Run with Streamlit
+You can run the same email client as a Streamlit app (same data in `app/data/emails.json`):
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Start the app:
+   ```bash
+   streamlit run streamlit_app.py
+   ```
+3. Open the URL shown in the terminal (e.g. http://localhost:8501).
+
+The original web app (`python app/server.py`) still serves the HTML/JS UI on port 8000.
+
+## Deploy on Streamlit Community Cloud
+Push the repo to GitHub, then at [share.streamlit.io](https://share.streamlit.io): New app → connect the repo, set **Main file path** to `streamlit_app.py`, and deploy. Note: on Streamlit Cloud the filesystem is ephemeral, so email data will not persist across redeploys unless you switch to a database or external storage.
+
 ## Troubleshooting: preview says "Not Found"
 If you still see a blank `Not Found` page/image in a preview tool:
 1. Confirm you are opening the app URL (not a stale preview URL):
